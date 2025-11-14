@@ -39,22 +39,6 @@ def register_import_callbacks(app, db):
         
         return html.Div(components)
 
-    def handle_preview(contents, filename, additional_messages=None):
-        """Generic preview handler"""
-        if contents is None:
-            return html.Div("No file selected", className='text-muted'), True, None
-        
-        success, df, error = decode_uploaded_file(contents)
-        if not success:
-            return dbc.Alert(f"Error reading CSV: {error}", color="danger"), True, None
-        
-        is_valid, error_msg = validate_csv_structure(df, ['ID'])
-        if not is_valid:
-            return dbc.Alert(error_msg, color="danger"), True, None
-        
-        preview_content = create_preview_table(df, additional_messages)
-        return preview_content, False, df.to_json(date_format='iso', orient='split')
-
     @app.callback(
         [Output('import-preview', 'children'),
          Output('confirm-import', 'disabled'),
@@ -65,18 +49,49 @@ def register_import_callbacks(app, db):
     )
     def preview_qc_csv(contents, filename):
         """Preview CSV before importing to QC data"""
-        return handle_preview(contents, filename)
+        if contents is None:
+            return html.Div("No file selected", className='text-muted'), True, None
+        
+        success, df, error = decode_uploaded_file(contents)
+        if not success:
+            return dbc.Alert(f"Error reading CSV: {error}", color="danger"), True, None
+        
+        # Check required columns
+        is_valid, error_msg = validate_csv_structure(df, ['ID'])
+        if not is_valid:
+            return dbc.Alert(error_msg, color="danger"), True, None
+        
+        # Check wave column
+        extra_messages = []
+        if 'wave' not in df.columns:
+            return dbc.Alert("CSV must contain 'wave' column", color="danger"), True, None
+        
+        # Detect wave values
+        wave_values = df['wave'].dropna().unique()
+        if len(wave_values) == 0:
+            return dbc.Alert("No valid wave values found", color="danger"), True, None
+        
+        extra_messages.append(
+            dbc.Alert(
+                f"Detected wave values: {', '.join(map(str, sorted(wave_values)))}",
+                color="info",
+                className="mb-2"
+            )
+        )
+        
+        preview_content = create_preview_table(df, extra_messages)
+        return preview_content, False, df.to_json(date_format='iso', orient='split')
 
     @app.callback(
         [Output('import-status', 'children'),
         Output('toast-container', 'children', allow_duplicate=True)],
         Input('confirm-import', 'n_clicks'),
         [State('uploaded-csv-data', 'data'),
-        State('import-wave', 'value'),
-        State('import-project', 'value')],
+        State('import-project', 'value'),
+        State('import-user', 'value')],
         prevent_initial_call=True
     )
-    def execute_qc_import(n_clicks, csv_data, wave, project):
+    def execute_qc_import(n_clicks, csv_data, project, user):
         """Execute QC data CSV import"""
         if not n_clicks:
             return dash.no_update, dash.no_update
@@ -84,11 +99,11 @@ def register_import_callbacks(app, db):
         if not csv_data:
             return dbc.Alert("Please upload a CSV file", color="warning"), None
         
-        if not wave:
-            return dbc.Alert("Wave is required", color="warning"), None
-        
         try:
             df = pd.read_json(io.StringIO(csv_data), orient='split')
+            
+            if 'wave' not in df.columns:
+                return dbc.Alert("CSV must contain 'wave' column", color="danger"), None
             
             if project:
                 df['projects'] = project
@@ -96,17 +111,33 @@ def register_import_callbacks(app, db):
             temp_path = prepare_temp_csv(df)
             
             try:
-                count = db.import_from_csv(temp_path, wave=wave, user='dash_user')
+                total_count = 0
+                wave_values = df['wave'].dropna().unique()
+                
+                # Use user input, fallback to 'user'
+                import_user = user if user else 'user'
+                
+                for wave_val in wave_values:
+                    wave_df = df[df['wave'] == wave_val]
+                    wave_temp = prepare_temp_csv(wave_df)
+                    try:
+                        count = db.import_from_csv(wave_temp, wave=str(wave_val), user=import_user)
+                        total_count += count
+                    finally:
+                        cleanup_temp_file(wave_temp)
                 
                 toast = dbc.Toast(
-                    f"Successfully imported {count} records to {wave}",
+                    f"Successfully imported {total_count} records across {len(wave_values)} waves (User: {import_user})",
                     header="Import Complete",
                     is_open=True,
                     duration=4000,
                     className='bg-success text-white'
                 )
                 
-                return dbc.Alert(f"Successfully imported {count} records", color="success"), toast
+                return dbc.Alert(
+                    f"Successfully imported {total_count} records", 
+                    color="success"
+                ), toast
                 
             finally:
                 cleanup_temp_file(temp_path)
@@ -139,11 +170,27 @@ def register_import_callbacks(app, db):
         
         extra_messages = []
         
+        # Check wave column
+        if 'wave' not in df.columns:
+            return dbc.Alert("CSV must contain 'wave' column", color="danger"), True, None
+        
+        wave_values = df['wave'].dropna().unique()
+        if len(wave_values) == 0:
+            return dbc.Alert("No valid wave values found", color="danger"), True, None
+        
+        extra_messages.append(
+            dbc.Alert(
+                f"Detected wave values: {', '.join(map(str, sorted(wave_values)))}",
+                color="info",
+                className="mb-2"
+            )
+        )
+        
         metadata_cols = [col for col in TABLE_CONFIG['metadata_columns'] if col in df.columns]
         if metadata_cols:
             extra_messages.append(
                 dbc.Alert(
-                    f"Columns {metadata_cols} will be overwritten with system-generated values",
+                    f"Columns {metadata_cols} will be overwritten with system values",
                     color="warning",
                     className="mb-2"
                 )
@@ -152,11 +199,11 @@ def register_import_callbacks(app, db):
         extra_messages.append(
             html.P([
                 html.Strong("Note: "), 
-                "A unique 'row_id' column will be automatically added to this table."
+                "A unique 'row_id' column will be automatically added."
             ], className="text-info small mb-2")
         )
         
-        return handle_preview(contents, filename, extra_messages)
+        return create_preview_table(df, extra_messages), False, df.to_json(date_format='iso', orient='split')
 
     @app.callback(
         [Output('table-import-status', 'children'),
@@ -166,21 +213,20 @@ def register_import_callbacks(app, db):
         State('table-name-input', 'value'),
         State('table-display-name', 'value'),
         State('table-description', 'value'),
-        State('table-import-wave', 'value'),
         State('table-import-project', 'value'),
         State('table-import-user', 'value')],
         prevent_initial_call=True
     )
     def execute_table_import(n_clicks, csv_data, table_name, display_name, 
-                            description, wave, project, user):
+                            description, project, user):
         if not n_clicks:
             return dash.no_update, dash.no_update
         
         if not csv_data or not table_name:
             return dbc.Alert("Please fill in table name and upload CSV", color="warning"), None
         
-        if not wave or not project:
-            return dbc.Alert("Wave and Project are required", color="warning"), None
+        if not project:
+            return dbc.Alert("Project is required", color="warning"), None
         
         is_valid, error_msg = validate_table_name(table_name)
         if not is_valid:
@@ -190,7 +236,8 @@ def register_import_callbacks(app, db):
             df = pd.read_json(io.StringIO(csv_data), orient='split')
             
             if 'wave' not in df.columns:
-                df['wave'] = wave
+                return dbc.Alert("CSV must contain 'wave' column", color="danger"), None
+            
             if 'projects' not in df.columns:
                 df['projects'] = project
             
@@ -204,8 +251,9 @@ def register_import_callbacks(app, db):
             )
             
             if result['success']:
+                wave_values = df['wave'].unique()
                 toast = dbc.Toast(
-                    f"{result['message']} (Wave: {wave}, Project: {project})",
+                    f"{result['message']} (Waves: {', '.join(map(str, sorted(wave_values)))}, Project: {project})",
                     header="Table Import Complete",
                     is_open=True,
                     duration=4000,

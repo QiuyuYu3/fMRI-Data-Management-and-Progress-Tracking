@@ -37,7 +37,6 @@ def register_filter_callbacks(app, db):
          Input('add-subject-modal', 'is_open'),
          Input('toast-container', 'children'),
          Input('table-selector', 'value')],
-        #  Input('data-table', 'page_size')],
         State('data-table', 'page_size')
     )
     def update_table(filter_id, filter_wave, filter_rescan, filter_tags, filter_notes,
@@ -68,6 +67,9 @@ def register_filter_callbacks(app, db):
                 df['tags'] = df['tags'].apply(
                     lambda x: ', '.join(json.loads(x)) if x and x != 'null' else ''
                 )
+
+        # Remove duplicate columns
+        df = df.loc[:, ~df.columns.duplicated()]
         
         if df.empty:
             return [], [], page_size, [], [], [], [], [], selected_table
@@ -79,6 +81,7 @@ def register_filter_callbacks(app, db):
                 button_id = ctx.triggered[0]['prop_id'].split('.')[0]
                 if button_id.startswith('quick-'):
                     filter_type = button_id.replace('quick-', '')
+                    print(f"Quick filter triggered: {filter_type}")  # Debug
                     df = apply_quick_filter(df, filter_type)
             
             df = filter_dataframe_by_criteria(
@@ -86,10 +89,15 @@ def register_filter_callbacks(app, db):
                 filter_tags, filter_notes
             )
         
-        # Get wave options
+        # Get wave options - ALWAYS from full unfiltered data
         wave_options = []
         if 'wave' in df.columns:
-            wave_options = [{'label': w, 'value': w} for w in sorted(df['wave'].unique())]
+            # Get all waves from database, not just filtered ones
+            all_raw_data = db.get_all_data_raw()
+            all_df = parse_qc_metrics(all_raw_data)
+            if 'wave' in all_df.columns:
+                all_waves = sorted(all_df['wave'].dropna().unique())
+                wave_options = [{'label': str(w), 'value': str(w)} for w in all_waves]
         
         # Get tag options
         tag_options = []
@@ -197,3 +205,27 @@ def register_filter_callbacks(app, db):
     def update_page_size(page_size):
         """Update table page size from dropdown"""
         return page_size if page_size else 25
+    
+    # Separate callback for Add Subject modal wave dropdown
+    @app.callback(
+        Output('new-subject-wave', 'options'),
+        Input('add-subject-modal', 'is_open')
+    )
+    def populate_add_subject_wave_options(is_open):
+        """Populate wave options for Add Subject modal"""
+        if not is_open:
+            return []
+        
+        try:
+            qc_raw_data = db.get_all_data_raw()
+            if not qc_raw_data:
+                return []
+            
+            df = parse_qc_metrics(qc_raw_data)
+            if 'wave' in df.columns:
+                waves = sorted(df['wave'].dropna().unique())
+                return [{'label': str(w), 'value': str(w)} for w in waves]
+            return []
+        except Exception as e:
+            print(f"Error loading waves for Add Subject: {e}")
+            return []

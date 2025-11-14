@@ -1,0 +1,64 @@
+ID,wave,projects,test_date,iq_score,memory_score,attention_score,completion_status,notes
+001,2,ProjectB,2025-10-27,87.0,94.7,36.1,,Excellent
+003,3,BRANCH,2025-09-30,130.0,6.2,72.1,complete,Below average
+004,3,ProjectA,2025-07-22,104.0,73.3,13.7,complete,Excellent
+005,3,ProjectA,2025-11-06,98.0,75.0,12.1,incomplete,Excellent
+005,1,ProjectA,2025-06-29,85.0,79.9,40.7,partial,Normal performance
+007,2,ProjectA,2025-09-12,117.0,77.5,22.8,complete,Normal performance
+007,1,ProjectA,2025-10-12,,78.4,14.5,,
+008,2,ProjectA,2025-07-06,126.0,,99.3,incomplete,Excellent
+009,3,BRANCH,2025-08-31,124.0,,,,Normal performance
+009,2,ProjectA,2025-10-17,108.0,28.1,88.6,incomplete,Below average
+011,2,ProjectA,2025-05-27,99.0,57.5,37.0,complete,Below average
+012,1,ProjectB,2025-10-20,123.0,65.1,13.0,incomplete,
+012,2,ProjectB,2025-07-08,,,19.0,complete,Below average
+013,2,ProjectA,2025-07-04,126.0,75.3,57.6,incomplete,
+013,3,BRANCH,2025-06-16,104.0,65.1,4.9,incomplete,
+014,1,ProjectA,2025-07-07,91.0,,,,Excellent
+014,2,ProjectB,2025-08-12,127.0,,85.7,incomplete,Excellent
+015,2,ProjectB,2025-07-25,106.0,92.1,22.1,,Normal performance
+015,1,BRANCH,2025-08-18,98.0,38.8,43.9,,
+016,1,ProjectA,2025-07-02,91.0,22.1,27.4,partial,
+016,3,ProjectB,2025-07-07,114.0,,54.2,partial,Excellent
+017,1,ProjectA,2025-08-08,105.0,22.1,1.2,incomplete,Excellent
+018,2,ProjectA,2025-10-01,117.0,59.2,26.6,complete,Below average
+019,2,BRANCH,2025-06-02,112.0,43.6,83.4,,Excellent
+019,1,BRANCH,2025-08-21,97.0,,41.0,complete,Excellent
+020,3,ProjectB,2025-06-18,99.0,62.9,1.1,incomplete,Below average
+021,2,ProjectB,2025-06-29,104.0,,13.6,complete,Excellent
+021,1,ProjectA,2025-08-16,109.0,1.8,78.2,,
+022,1,ProjectA,2025-07-10,122.0,41.2,94.4,,Excellent
+022,3,BRANCH,2025-08-04,101.0,9.3,65.8,,Normal performance
+023,1,ProjectA,2025-09-07,111.0,86.2,31.7,complete,Normal performance
+024,3,BRANCH,2025-08-28,129.0,8.4,,partial,Below average
+024,1,ProjectB,2025-07-10,99.0,,80.6,complete,Normal performance
+025,2,ProjectB,2025-08-22,111.0,9.4,46.6,complete,Excellent
+026,1,BRANCH,2025-06-20,105.0,84.2,,partial,Below average
+026,2,ProjectB,2025-06-13,126.0,,37.5,,Normal performance
+027,2,ProjectB,2025-08-06,127.0,35.7,50.5,,
+028,1,ProjectA,2025-09-01,99.0,58.2,12.2,partial,Normal performance
+030,2,ProjectB,2025-06-23,98.0,,,partial,Normal performance
+030,3,ProjectB,2025-08-19,125.0,16.2,,complete,
+031,1,ProjectB,2025-09-06,100.0,88.7,12.1,,
+034,1,ProjectA,2025-06-27,111.0,23.4,75.0,,Excellent
+035,2,ProjectA,2025-07-22,93.0,,74.1,complete,Excellent
+035,3,BRANCH,2025-07-02,114.0,58.3,20.7,incomplete,Below average
+036,2,ProjectB,2025-05-30,125.0,75.8,83.3,incomplete,Below average
+036,1,ProjectB,2025-08-28,125.0,4.2,61.9,partial,
+037,2,ProjectA,2025-06-16,86.0,74.0,5.4,partial,Normal performance
+037,3,BRANCH,2025-09-14,119.0,39.2,22.2,incomplete,Below average
+038,1,ProjectA,2025-08-09,124.0,21.2,37.8,,Excellent
+038,2,ProjectA,2025-10-17,117.0,76.1,31.4,complete,Normal performance
+039,3,ProjectB,2025-07-08,97.0,25.6,27.2,partial,Below average
+040,2,ProjectB,2025-11-05,96.0,96.6,83.0,incomplete,Normal performance
+041,3,ProjectB,2025-08-22,91.0,40.2,82.7,,
+041,1,ProjectA,2025-10-14,97.0,,37.7,,
+044,2,ProjectA,2025-06-07,108.0,,71.0,complete,Below average
+044,1,ProjectA,2025-11-03,125.0,27.5,54.7,incomplete,
+045,3,ProjectB,2025-07-25,123.0,6.8,36.7,,Below average
+045,2,ProjectB,2025-08-09,118.0,99.6,93.6,partial,Below average
+046,3,BRANCH,2025-07-21,101.0,52.6,79.7,complete,
+046,2,BRANCH,2025-06-23,107.0,,,,Normal performance
+047,2,ProjectB,2025-07-23,,38.5,80.1,partial,Excellent
+047,1,ProjectB,2025-06-19,108.0,17.9,,complete,Excellent
+048,3,ProjectA,2025-10-22,87.0,37.8,40.7,partial,Excellent

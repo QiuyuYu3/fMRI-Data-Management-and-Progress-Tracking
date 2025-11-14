@@ -67,9 +67,15 @@ def create_add_subject_modal():
 
 
 def create_import_csv_modal():
+    """Create modal for importing CSV to QC data"""
     return dbc.Modal([
         dbc.ModalHeader("Import CSV to QC Data"),
         dbc.ModalBody([
+            dbc.Alert([
+                html.I(className="bi bi-info-circle me-2"),
+                "CSV must contain 'ID' and 'wave' columns. Wave values will be auto-detected."
+            ], color="info", className="mb-3"),
+            
             dcc.Upload(
                 id='upload-csv',
                 children=dbc.Button("Select CSV File", className='btn-custom-primary'),
@@ -77,12 +83,11 @@ def create_import_csv_modal():
             ),
             html.Hr(),
             dbc.Row([
-                create_wave_dropdown('import-wave', required=True),
-                create_project_dropdown('import-project', required=True),
+                create_project_dropdown('import-project', required=True, md=6),
                 dbc.Col([
                     dbc.Label("User"),
                     dbc.Input(id='import-user', placeholder='Your name', value='dash_user')
-                ], md=4)
+                ], md=6)
             ]),
             html.Hr(),
             html.Div(id='import-preview'),
@@ -97,14 +102,18 @@ def create_import_csv_modal():
 
 
 def create_import_table_modal():
+    """Create modal for importing additional tables"""
     return dbc.Modal([
         dbc.ModalHeader("Import Additional Table"),
         dbc.ModalBody([
-            html.P(
-                "Import a new data table (e.g., behavioral tests, physiological data). "
-                "Must contain 'ID' column.",
-                className="text-muted"
-            ),
+            dbc.Alert([
+                html.I(className="bi bi-info-circle me-2"),
+                "CSV must contain 'ID' and 'wave' columns. Wave values will be auto-detected.",
+                html.Br(),
+                "Automatic row_id will be created as primary key.",
+                html.Br(),
+                "Allows duplicate ID+wave combinations for multiple runs."
+            ], color="info", className="mb-3"),
             
             dcc.Upload(
                 id='upload-table-csv',
@@ -143,11 +152,7 @@ def create_import_table_modal():
             ], className='mb-3'),
             
             dbc.Row([
-                create_wave_dropdown('table-import-wave', required=True),
-                create_project_dropdown('table-import-project', required=True),
-            ], className='mb-3'),
-            
-            dbc.Row([
+                create_project_dropdown('table-import-project', required=True, md=6),
                 dbc.Col([
                     dbc.Label("Description (optional)"),
                     dbc.Textarea(
@@ -155,17 +160,8 @@ def create_import_table_modal():
                         placeholder='Describe this table...',
                         rows=2
                     )
-                ], md=12)
+                ], md=6)
             ], className='mb-3'),
-            
-            dbc.Alert([
-                html.I(className="bi bi-info-circle me-2"),
-                "Automatic row_id will be created as primary key",
-                html.Br(),
-                "Allows duplicate ID+wave combinations (useful for multiple runs)",
-                html.Br(),
-                "Project and Wave are required for data organization"
-            ], color="info", className="mb-3"),
             
             html.Hr(),
             html.Div(id='table-import-preview'),

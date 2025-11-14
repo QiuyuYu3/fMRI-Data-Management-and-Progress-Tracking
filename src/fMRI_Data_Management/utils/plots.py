@@ -349,137 +349,8 @@ def create_waffle_chart(df):
     
     return fig
 
-
-# def create_time_series_chart(df):
-#     """Create time series chart showing weekly subject entry count with area fill"""
-#     if 'created_at' not in df.columns or df.empty:
-#         fig = go.Figure()
-#         fig.add_annotation(
-#             text="No timestamp data available",
-#             xref="paper", yref="paper",
-#             x=0.5, y=0.5, 
-#             showarrow=False,
-#             font=dict(size=14, color='gray')
-#         )
-#         return fig
-    
-#     try:
-#         # Convert to datetime with flexible format
-#         df = df.copy()
-#         df['created_at'] = pd.to_datetime(df['created_at'], format='mixed', errors='coerce')
-        
-#         # Remove rows with invalid dates
-#         df = df.dropna(subset=['created_at'])
-        
-#         if df.empty:
-#             raise ValueError("No valid dates found")
-        
-#         # Group by week
-#         df['week'] = df['created_at'].dt.to_period('W').dt.start_time
-        
-#         weekly_counts = df.groupby('week').size().reset_index(name='count')
-        
-#         # Fill missing weeks with 0
-#         if not weekly_counts.empty:
-#             date_range = pd.date_range(
-#                 start=weekly_counts['week'].min(),
-#                 end=weekly_counts['week'].max(),
-#                 freq='W-MON'
-#             )
-#             full_range = pd.DataFrame({'week': date_range})
-#             weekly_counts = full_range.merge(weekly_counts, on='week', how='left').fillna(0)
-        
-#         fig = go.Figure()
-        
-#         # Custom colors for time series (Deep Blue/Teal line with light fill)
-#         line_color = '#1f77b4' # Deep Blue
-#         fill_color = 'rgba(31, 119, 180, 0.3)'
-#         peak_color = '#d62728' # Bright Red for peaks
-        
-#         # Add area fill
-#         fig.add_trace(go.Scatter(
-#             x=weekly_counts['week'],
-#             y=weekly_counts['count'],
-#             mode='lines',
-#             name='Subjects per Week',
-#             line=dict(color=line_color, width=1.5),
-#             fill='tozeroy',
-#             fillcolor=fill_color,
-#             hovertemplate='Week: %{x|%Y-%m-%d}<br>Subjects: %{y}<extra></extra>'
-#         ))
-        
-#         # Add markers on peaks
-#         if len(weekly_counts) > 0:
-#             max_count = weekly_counts['count'].max()
-#             if max_count > 0:
-#                 peak_weeks = weekly_counts[weekly_counts['count'] == max_count]
-#                 fig.add_trace(go.Scatter(
-#                     x=peak_weeks['week'],
-#                     y=peak_weeks['count'],
-#                     mode='markers',
-#                     marker=dict(
-#                         size=12,
-#                         color=peak_color, # Bright Red for peaks
-#                         symbol='star',
-#                         line=dict(width=2, color='white')
-#                     ),
-#                     name='Peak Week',
-#                     hovertemplate='Peak: %{y} subjects<extra></extra>'
-#                 ))
-        
-#         fig.update_layout(
-#             title="Subject Entry Timeline (Weekly)",
-#             xaxis_title="Week",
-#             yaxis_title="Number of Subjects",
-#             hovermode='x unified', # Set hover mode to 'x unified' for better data review
-#             height=400,
-#             xaxis=dict(
-#                 showgrid=True,
-#                 gridcolor='rgba(200, 200, 200, 0.3)',
-#                 showline=True,
-#                 linewidth=1,
-#                 linecolor='lightgray',
-#                 zeroline=False
-#             ),
-#             yaxis=dict(
-#                 showgrid=True,
-#                 gridcolor='rgba(200, 200, 200, 0.3)',
-#                 showline=True,
-#                 linewidth=1,
-#                 linecolor='lightgray',
-#                 zeroline=True,
-#                 zerolinewidth=1,
-#                 zerolinecolor='lightgray'
-#             ),
-#             paper_bgcolor='white',
-#             plot_bgcolor='rgba(245, 245, 250, 0.5)',
-#             font=dict(size=11),
-#             legend=dict(
-#                 orientation="h",
-#                 yanchor="bottom",
-#                 y=1.02,
-#                 xanchor="right",
-#                 x=1
-#             )
-#         )
-        
-#         return fig
-        
-#     except Exception as e:
-#         fig = go.Figure()
-#         fig.add_annotation(
-#             text=f"Error processing dates: {str(e)}",
-#             xref="paper", yref="paper",
-#             x=0.5, y=0.5, 
-#             showarrow=False,
-#             font=dict(size=14, color='red')
-#         )
-#         return fig
-
-
-
-
 def create_time_series_chart(df):
+    """Create combined time series: overall trend + by-wave breakdown"""
     if 'created_at' not in df.columns or df.empty:
         fig = go.Figure()
         fig.add_annotation(
@@ -502,73 +373,169 @@ def create_time_series_chart(df):
             df['wave'] = 'all'
 
         df['week'] = df['created_at'].dt.to_period('W').dt.start_time
-        weekly_counts = df.groupby(['week', 'wave']).size().reset_index(name='count')
-
+        
+        # Overall weekly counts
+        overall_counts = df.groupby('week').size().reset_index(name='count')
+        
+        # By-wave weekly counts
+        wave_counts = df.groupby(['week', 'wave']).size().reset_index(name='count')
+        
+        # Get date range for filling gaps
         date_range = pd.date_range(
-            start=weekly_counts['week'].min(),
-            end=weekly_counts['week'].max(),
+            start=df['week'].min(),
+            end=df['week'].max(),
             freq='W-MON'
         )
-        waves = sorted(df['wave'].unique())
-        colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#9467bd', '#8c564b']
-        peak_color = '#d62728'
-
-        fig = go.Figure()
+        full_range = pd.DataFrame({'week': date_range})
+        
+        # Fill missing weeks for overall
+        overall_counts = full_range.merge(overall_counts, on='week', how='left').fillna(0)
+        
+        # Get sorted wave values
+        waves = sorted([w for w in df['wave'].unique() if w != 'all'])
+        
+        colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#9467bd', '#8c564b', '#d62728']
+        
+        # Create 2x1 subplots
+        fig = make_subplots(
+            rows=2, cols=1,
+            subplot_titles=("Overall Subject Entry Timeline", "Subject Entry by Wave"),
+            vertical_spacing=0.12,
+            row_heights=[0.4, 0.6]
+        )
+        
+        # Top subplot: Overall trend
+        overall_color = '#1f77b4'
+        fig.add_trace(
+            go.Scatter(
+                x=overall_counts['week'],
+                y=overall_counts['count'],
+                mode='lines',
+                name='All Waves',
+                line=dict(color=overall_color, width=2),
+                fill='tozeroy',
+                fillcolor=f'rgba(31, 119, 180, 0.2)',
+                hovertemplate='Week: %{x|%Y-%m-%d}<br>Subjects: %{y}<extra></extra>',
+                showlegend=False
+            ),
+            row=1, col=1
+        )
+        
+        # Add peak marker for overall
+        if len(overall_counts) > 0 and overall_counts['count'].max() > 0:
+            max_count = overall_counts['count'].max()
+            peak_week = overall_counts.loc[overall_counts['count'] == max_count, 'week'].iloc[0]
+            fig.add_trace(
+                go.Scatter(
+                    x=[peak_week],
+                    y=[max_count],
+                    mode='markers',
+                    marker=dict(size=12, color='#d62728', symbol='star', 
+                               line=dict(width=2, color='white')),
+                    name='Peak',
+                    hovertemplate='Peak<br>Week: %{x|%Y-%m-%d}<br>Subjects: %{y}<extra></extra>',
+                    showlegend=False
+                ),
+                row=1, col=1
+            )
+        
+        # Bottom subplot: By wave
         global_max = 0
         global_peak_week = None
-
+        
         for i, wave in enumerate(waves):
-            wave_df = weekly_counts[weekly_counts['wave'] == wave]
-            full_range = pd.DataFrame({'week': date_range})
+            wave_df = wave_counts[wave_counts['wave'] == wave]
             wave_df = full_range.merge(wave_df, on='week', how='left').fillna({'count': 0, 'wave': wave})
-
+            
             color = colors[i % len(colors)]
-            fig.add_trace(go.Scatter(
-                x=wave_df['week'],
-                y=wave_df['count'],
-                mode='lines',
-                name=str(wave).title(),
-                line=dict(color=color, width=1.5),
-                fill='tozeroy',
-                fillcolor=f'rgba({int(color[1:3],16)},'
-                          f'{int(color[3:5],16)},'
-                          f'{int(color[5:7],16)},0.2)',
-                hovertemplate='Wave: %{text}<br>Week: %{x|%Y-%m-%d}<br>Subjects: %{y}<extra></extra>',
-                text=[wave] * len(wave_df)
-            ))
-
+            r, g, b = int(color[1:3], 16), int(color[3:5], 16), int(color[5:7], 16)
+            
+            # Convert wave value to display format
+            wave_label = f"Wave {wave}" if wave != 'all' else 'All'
+            
+            fig.add_trace(
+                go.Scatter(
+                    x=wave_df['week'],
+                    y=wave_df['count'],
+                    mode='lines',
+                    name=wave_label,
+                    line=dict(color=color, width=1.5),
+                    fill='tozeroy',
+                    fillcolor=f'rgba({r}, {g}, {b}, 0.2)',
+                    hovertemplate=f'{wave_label}<br>Week: %{{x|%Y-%m-%d}}<br>Subjects: %{{y}}<extra></extra>',
+                    legendgroup=wave_label
+                ),
+                row=2, col=1
+            )
+            
+            # Track global peak
             wave_max = wave_df['count'].max()
             if wave_max > global_max:
                 global_max = wave_max
                 global_peak_week = wave_df.loc[wave_df['count'] == wave_max, 'week'].iloc[0]
-
+        
+        # Add global peak marker for by-wave plot
         if global_max > 0 and global_peak_week is not None:
-            fig.add_trace(go.Scatter(
-                x=[global_peak_week],
-                y=[global_max],
-                mode='markers',
-                marker=dict(size=14, color=peak_color, symbol='star', line=dict(width=2, color='white')),
-                name='Global Peak',
-                hovertemplate='Global Peak<br>Week: %{x|%Y-%m-%d}<br>Subjects: %{y}<extra></extra>'
-            ))
-
+            fig.add_trace(
+                go.Scatter(
+                    x=[global_peak_week],
+                    y=[global_max],
+                    mode='markers',
+                    marker=dict(size=12, color='#d62728', symbol='star',
+                               line=dict(width=2, color='white')),
+                    name='Peak',
+                    hovertemplate='Peak<br>Week: %{x|%Y-%m-%d}<br>Subjects: %{y}<extra></extra>',
+                    showlegend=False
+                ),
+                row=2, col=1
+            )
+        
+        # Update layout
+        fig.update_xaxes(
+            showgrid=True, gridcolor='rgba(200,200,200,0.3)',
+            showline=True, linewidth=1, linecolor='lightgray',
+            zeroline=False,
+            row=1, col=1
+        )
+        fig.update_xaxes(
+            showgrid=True, gridcolor='rgba(200,200,200,0.3)',
+            showline=True, linewidth=1, linecolor='lightgray',
+            zeroline=False,
+            title_text="Week",
+            row=2, col=1
+        )
+        
+        fig.update_yaxes(
+            showgrid=True, gridcolor='rgba(200,200,200,0.3)',
+            showline=True, linewidth=1, linecolor='lightgray',
+            zeroline=True, zerolinewidth=1, zerolinecolor='lightgray',
+            title_text="Number of Subjects",
+            row=1, col=1
+        )
+        fig.update_yaxes(
+            showgrid=True, gridcolor='rgba(200,200,200,0.3)',
+            showline=True, linewidth=1, linecolor='lightgray',
+            zeroline=True, zerolinewidth=1, zerolinecolor='lightgray',
+            title_text="Number of Subjects",
+            row=2, col=1
+        )
+        
         fig.update_layout(
-            title="Subject Entry Timeline by Wave (Weekly)",
-            xaxis_title="Week",
-            yaxis_title="Number of Subjects",
+            height=700,
             hovermode='x unified',
-            height=400,
-            xaxis=dict(showgrid=True, gridcolor='rgba(200,200,200,0.3)',
-                       showline=True, linewidth=1, linecolor='lightgray', zeroline=False),
-            yaxis=dict(showgrid=True, gridcolor='rgba(200,200,200,0.3)',
-                       showline=True, linewidth=1, linecolor='lightgray',
-                       zeroline=True, zerolinewidth=1, zerolinecolor='lightgray'),
             paper_bgcolor='white',
             plot_bgcolor='rgba(245,245,250,0.5)',
             font=dict(size=11),
-            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+            legend=dict(
+                orientation="h",
+                yanchor="top",
+                y=-0.15,
+                xanchor="center",
+                x=0.5
+            ),
+            showlegend=True
         )
-
+        
         return fig
 
     except Exception as e:
@@ -582,21 +549,25 @@ def create_time_series_chart(df):
         )
         return fig
 
-
 def get_summary_stats(df):
-    """Calculate summary statistics for cards"""
+    """Calculate summary statistics - handles dynamic wave values"""
     total = len(df)
-    wave1 = len(df[df['wave'] == 'wave1']) if 'wave' in df.columns else 0
-    wave2 = len(df[df['wave'] == 'wave2']) if 'wave' in df.columns else 0
     
-    # Calculate completion rate
+    # Dynamic wave counting
+    wave_stats = {}
+    if 'wave' in df.columns:
+        waves = sorted([w for w in df['wave'].unique() if pd.notna(w)])
+        for wave in waves:
+            wave_stats[f'wave_{wave}'] = len(df[df['wave'] == wave])
+    
+    # Completion rate
     completed = 0
     if 'notes' in df.columns:
         completed = len(df[df['notes'].notna() & (df['notes'] != '')])
     
-    return {
+    result = {
         'total': total,
-        'wave1': wave1,
-        'wave2': wave2,
-        'completed': completed
+        'completed': completed,
+        'waves': wave_stats
     }
+    return result

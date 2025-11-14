@@ -4,7 +4,7 @@ from config.constants import (
     PREDEFINED_TAGS,
     METRIC_GROUPS,
     PROJECTS,
-    WAVES,
+    # WAVES,
     QC_OPTIONS,
     DEFAULT_NOTE_TEMPLATES,
     DB_CONFIG,

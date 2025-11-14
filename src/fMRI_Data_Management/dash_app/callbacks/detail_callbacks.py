@@ -3,6 +3,7 @@ import dash_bootstrap_components as dbc
 from dash import html
 import pandas as pd
 from utils.data_processing import parse_qc_metrics
+from config.constants import TABLE_CONFIG
 
 def register_detail_callbacks(app, db):
     """Register subject detail modal callbacks"""
@@ -165,7 +166,6 @@ def create_tab_content(active_tab, all_data, current_table, db):
             if current_table == 'qc_data':
                 df = parse_qc_metrics(all_data[current_table])
             
-            from config.constants import TABLE_CONFIG
             comparison_table = dash_table.DataTable(
                 columns=[{"name": i, "id": i, 
                          'editable': i not in TABLE_CONFIG['non_editable_columns']} 

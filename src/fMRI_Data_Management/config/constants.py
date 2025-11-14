@@ -50,10 +50,9 @@ METRIC_GROUPS = {
 }
  
 # Projects and Waves
-#TODO: Replace with input fields instead of dropdown menus
 PROJECTS = ['BRANCH', 'DORRY']
 
-WAVES = ['wave1', 'wave2']
+# WAVES = ['wave1', 'wave2']
 
 QC_OPTIONS = [
     {'label': 'Done (1)', 'value': 1},

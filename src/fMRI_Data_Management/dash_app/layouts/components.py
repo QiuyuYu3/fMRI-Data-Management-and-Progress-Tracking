@@ -3,7 +3,7 @@ from dash import dcc, html
 from config.constants import (
     PREDEFINED_TAGS, 
     PROJECTS, 
-    WAVES, 
+    # WAVES, 
     QC_OPTIONS,
     QUICK_FILTERS, 
     BATCH_OPERATIONS, 
@@ -26,12 +26,13 @@ def create_project_dropdown(dropdown_id: str, required: bool = False, md: int = 
 
 
 def create_wave_dropdown(dropdown_id: str, required: bool = False, md: int = 4):
+    """Create a wave dropdown that will be populated dynamically"""
     label_text = "Wave *" if required else "Wave"
     return dbc.Col([
         dbc.Label(label_text), 
         dcc.Dropdown(
             id=dropdown_id, 
-            options=[{'label': w, 'value': w} for w in WAVES],
+            options=[],  # Start with empty options, will be populated by callback
             placeholder='Select wave',
             clearable=not required
         )

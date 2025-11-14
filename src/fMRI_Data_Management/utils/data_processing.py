@@ -77,25 +77,43 @@ def filter_dataframe_by_criteria(df: pd.DataFrame,
     return df
 
 
-def apply_quick_filter(df: pd.DataFrame, filter_type: str) -> pd.DataFrame:
-    """Apply quick filter shortcuts"""
+def apply_quick_filter(df, filter_type):
+    """Apply quick filter buttons"""
+    from datetime import datetime, timedelta
+    
     if filter_type == 'rescan':
         return df[df['rescan'] == 1]
     
     elif filter_type == 'notes':
         return df[df['notes'].notna() & (df['notes'] != '')]
     
-    elif filter_type == 'week':
-        week_ago = pd.Timestamp.now() - pd.Timedelta(days=7)
-        df['created_at'] = pd.to_datetime(df['created_at'])
-        return df[df['created_at'] > week_ago]
-    
     elif filter_type == 'need_rerun':
         return df[df['tags'].str.contains('need re-run', case=False, na=False)]
     
-    # elif filter_type == 'needs_review':
-    #     return df[df['tags'].str.contains('needs_review', case=False, na=False)]
+    elif filter_type == 'week':
+        # Filter subjects created/modified this week
+        if 'created_at' not in df.columns:
+            return df  # No filtering if no timestamp column
         
+        try:
+            # Convert to datetime
+            df = df.copy()
+            df['created_at'] = pd.to_datetime(df['created_at'], errors='coerce')
+            
+            # Get start of current week (Monday)
+            today = datetime.now()
+            start_of_week = today - timedelta(days=today.weekday())
+            start_of_week = start_of_week.replace(hour=0, minute=0, second=0, microsecond=0)
+            
+            # Filter
+            filtered = df[df['created_at'] >= start_of_week]
+            print(f"This week filter: {len(filtered)} subjects from {start_of_week.date()}")
+            return filtered
+            
+        except Exception as e:
+            print(f"Error in week filter: {e}")
+            return df
+    
     return df
 
 

@@ -30,9 +30,12 @@ def register_stats_callbacks(app, db):
             return [], {}, {}, {}, {}
         
         df = parse_qc_metrics(qc_raw_data)
+        
+        # Remove duplicate columns if any
+        df = df.loc[:, ~df.columns.duplicated()]
         stats = get_summary_stats(df)
         
-        # Create summary cards
+        # Create summary cards - dynamic wave cards
         cards = [
             dbc.Col([
                 dbc.Card([
@@ -41,26 +44,27 @@ def register_stats_callbacks(app, db):
                         html.P("Total Subjects", className="card-text")
                     ])
                 ], style={"backgroundColor": COLORS['card'][0], "color": "white"})
-            ], md=4),
-            
-            dbc.Col([
-                dbc.Card([
-                    dbc.CardBody([
-                        html.H4(str(stats['wave1']), className="card-title"),
-                        html.P("Wave 1", className="card-text")
-                    ])
-                ], style={"backgroundColor": COLORS['card'][1], "color": "white"})
-            ], md=4),
-            
-            dbc.Col([
-                dbc.Card([
-                    dbc.CardBody([
-                        html.H4(str(stats['wave2']), className="card-title"),
-                        html.P("Wave 2", className="card-text")
-                    ])
-                ], style={"backgroundColor": COLORS['card'][2], "color": "white"})
-            ], md=4)
+            ], md=3)
         ]
+        
+        # Add wave cards dynamically
+        wave_stats = stats.get('waves', {})
+        sorted_waves = sorted(wave_stats.keys())
+        
+        for idx, wave_key in enumerate(sorted_waves):
+            wave_value = wave_key.replace('wave_', '')
+            color_idx = (idx + 1) % len(COLORS['card'])
+            
+            cards.append(
+                dbc.Col([
+                    dbc.Card([
+                        dbc.CardBody([
+                            html.H4(str(wave_stats[wave_key]), className="card-title"),
+                            html.P(f"Wave {wave_value}", className="card-text")
+                        ])
+                    ], style={"backgroundColor": COLORS['card'][color_idx], "color": "white"})
+                ], md=3)
+            )
         
         return (
             cards,
@@ -69,5 +73,3 @@ def register_stats_callbacks(app, db):
             create_waffle_chart(df),
             create_time_series_chart(df)
         )
-
-

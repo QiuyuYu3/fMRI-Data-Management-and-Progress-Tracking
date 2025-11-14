@@ -12,20 +12,20 @@ readme = "README.md"
 requires-python = ">=3.11"
 
 dependencies = [
-  "dash,
-  "dash-bootstrap-components,
-  "pandas,
-  "plotly,
-  "numpy,
-  "openpyxl,
+  "dash",
+  "dash-bootstrap-components",
+  "pandas",
+  "plotly",
+  "numpy",
+  "openpyxl",
 ]
 
 [project.optional-dependencies]
 dev = [
-  "pytest,
-  "pytest-cov,
-  "black,
-  "flake8,
-  "isort,
-  "ruff,
+  "pytest",
+  "pytest-cov",
+  "black",
+  "flake8",
+  "isort",
+  "ruff",
 ]

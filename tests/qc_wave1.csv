@@ -1,0 +1,51 @@
+ID,wave,projects,reconstruction,T1,kidvid,kidvid_QC,CARDS,Cards_QC,RS,RS_QC,Download,PPG,regress,projectspace,PPG_correct,cglab,rescan,notes,tags
+001,wave1,BRANCH,1.0,1.0,1.0,0.0,0.0,0.0,0.0,,1.0,,B,1.0,,1.0,0,,
+002,wave1,BRANCH,,,0.0,1.0,0.0,,,0.0,1.0,0.0,B,,,,1,Motion artifacts,incomplete RS
+003,wave1,ProjectA,,0.0,0.0,1.0,,1.0,,,,1.0,B,0.0,,,0,,
+004,wave1,ProjectA,0.0,1.0,0.0,0.0,1.0,0.0,1.0,0.0,,0.0,,0.0,1.0,,1,Motion artifacts,
+005,wave1,ProjectB,1.0,,1.0,1.0,0.0,1.0,0.0,,1.0,1.0,,1.0,0.0,,0,,
+006,wave1,ProjectA,1.0,,1.0,1.0,0.0,0.0,,1.0,0.0,0.0,B,,,,0,,
+007,wave1,ProjectB,1.0,,0.0,,0.0,,1.0,0.0,0.0,1.0,,0.0,0.0,,1,,
+008,wave1,BRANCH,1.0,,,0.0,,1.0,0.0,0.0,1.0,,B,0.0,,,0,Good quality,needs re-run
+009,wave1,ProjectB,,1.0,1.0,,1.0,,0.0,0.0,0.0,0.0,A,,,,0,Needs review,
+010,wave1,ProjectB,,1.0,0.0,0.0,1.0,0.0,1.0,0.0,,0.0,C,1.0,,1.0,0,,
+011,wave1,ProjectB,0.0,0.0,1.0,,,0.0,,0.0,,0.0,A,1.0,,0.0,0,Good quality,
+012,wave1,BRANCH,,0.0,,0.0,1.0,,1.0,1.0,1.0,,B,1.0,1.0,1.0,0,Good quality,
+013,wave1,BRANCH,0.0,,0.0,,0.0,0.0,,,1.0,1.0,A,1.0,,,0,,
+014,wave1,ProjectA,0.0,1.0,0.0,1.0,0.0,0.0,0.0,,,,B,,1.0,,0,Motion artifacts,check quality
+015,wave1,ProjectA,0.0,0.0,1.0,,1.0,1.0,,,1.0,,,,,0.0,0,Motion artifacts,
+016,wave1,BRANCH,,,1.0,1.0,0.0,,0.0,0.0,1.0,0.0,B,1.0,,,1,,
+017,wave1,ProjectB,0.0,1.0,,1.0,1.0,,0.0,0.0,0.0,1.0,,1.0,1.0,,0,,
+018,wave1,BRANCH,0.0,,,,0.0,,0.0,0.0,1.0,1.0,A,0.0,,,0,,
+019,wave1,ProjectA,0.0,,,,1.0,,0.0,1.0,0.0,0.0,C,,,0.0,0,,
+020,wave1,ProjectB,1.0,1.0,1.0,,0.0,,1.0,1.0,0.0,,A,0.0,,1.0,1,Needs review,
+021,wave1,BRANCH,,0.0,0.0,0.0,,,1.0,,0.0,0.0,,1.0,,,0,Needs review,
+022,wave1,ProjectB,,0.0,0.0,0.0,1.0,,,0.0,0.0,0.0,C,0.0,,,0,Good quality,
+023,wave1,ProjectA,,1.0,1.0,,0.0,1.0,,1.0,1.0,0.0,,0.0,0.0,,0,Good quality,
+024,wave1,BRANCH,,,0.0,1.0,,0.0,0.0,0.0,0.0,1.0,,1.0,,,0,,
+025,wave1,ProjectA,0.0,1.0,0.0,0.0,0.0,1.0,1.0,0.0,,0.0,A,0.0,,,0,,
+026,wave1,ProjectB,0.0,1.0,0.0,0.0,0.0,,0.0,0.0,1.0,,C,0.0,,,1,,
+027,wave1,ProjectB,,1.0,0.0,1.0,,0.0,,1.0,1.0,0.0,,,,,1,Motion artifacts,
+028,wave1,,,1.0,1.0,,1.0,1.0,0.0,,,,B,0.0,,,0,Motion artifacts,
+029,wave1,BRANCH,1.0,1.0,,1.0,1.0,0.0,1.0,1.0,1.0,,A,0.0,,,1,Needs review,needs re-run
+030,wave1,ProjectA,0.0,0.0,,1.0,0.0,0.0,1.0,0.0,,1.0,A,0.0,0.0,,0,Good quality,incomplete RS
+031,wave1,ProjectB,,,0.0,1.0,0.0,1.0,0.0,1.0,0.0,,C,,,1.0,0,Needs review,
+032,wave1,ProjectA,0.0,,,0.0,0.0,0.0,,0.0,1.0,1.0,B,1.0,,,0,Good quality,
+033,wave1,ProjectB,,,,0.0,,0.0,0.0,1.0,,,B,0.0,,,0,,
+034,wave1,,,1.0,0.0,1.0,1.0,,,1.0,0.0,1.0,B,,,,0,,
+035,wave1,ProjectB,,0.0,,1.0,,1.0,0.0,1.0,,1.0,B,0.0,,,0,,
+036,wave1,,0.0,,,,,0.0,1.0,,,,A,0.0,,,1,,
+037,wave1,ProjectA,,1.0,0.0,0.0,0.0,1.0,,,0.0,0.0,C,0.0,,,0,,
+038,wave1,ProjectA,0.0,,1.0,,0.0,0.0,0.0,,0.0,,A,1.0,,,0,Motion artifacts,needs re-run
+039,wave1,ProjectB,1.0,1.0,,,1.0,0.0,,,,1.0,A,,,,0,,
+040,wave1,ProjectA,,,0.0,0.0,1.0,,1.0,,1.0,,A,,,,0,Needs review,
+041,wave1,BRANCH,,1.0,0.0,0.0,0.0,,1.0,,0.0,1.0,,1.0,,,0,Good quality,needs re-run
+042,wave1,BRANCH,,0.0,1.0,0.0,,1.0,,1.0,1.0,1.0,A,,,,0,Needs review,
+043,wave1,ProjectB,,0.0,0.0,,,0.0,1.0,1.0,1.0,,B,0.0,,0.0,0,,
+044,wave1,,,,0.0,,,0.0,,1.0,,,,0.0,,,0,Needs review,
+045,wave1,ProjectA,,1.0,0.0,1.0,1.0,0.0,,,0.0,1.0,A,,1.0,,0,,check quality
+046,wave1,ProjectB,1.0,1.0,1.0,,1.0,0.0,0.0,1.0,,1.0,C,1.0,,,0,Motion artifacts,
+047,wave1,ProjectB,0.0,0.0,1.0,,1.0,0.0,,1.0,1.0,0.0,,1.0,,,0,,check quality
+048,wave1,ProjectB,,0.0,1.0,0.0,0.0,0.0,,,1.0,0.0,B,,,,0,Good quality,
+049,wave1,BRANCH,0.0,1.0,,,0.0,,0.0,0.0,1.0,,C,0.0,,,0,,
+050,wave1,ProjectB,,,0.0,1.0,,1.0,0.0,,1.0,1.0,C,0.0,,,0,,

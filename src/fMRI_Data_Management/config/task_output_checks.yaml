@@ -1,0 +1,61 @@
+recon_bids:
+  output_path: "{work_dir}/BIDS/sub-{subject}/ses-{session}/"
+  raw_count_check:
+    enabled: true
+    data_types:
+      anat:
+        expected_count: 1
+        pattern: "anat/*.nii.gz"
+      fmap:
+        expected_count: 4
+        pattern: "fmap/*.nii.gz"
+        tolerance: 1
+      rest:
+        expected_count: 2
+        pattern: "func/*rest*.nii.gz"
+        tolerance: 1
+      kidvid:
+        expected_count: 1
+        pattern: "func/*kidvid*.nii.gz"
+        tolerance: 0
+      cards:
+        expected_count: 1
+        pattern: "func/*cards*.nii.gz"
+        tolerance: 0
+
+      dwi:
+        expected_count: 1
+        pattern: "dwi/*.nii.gz"
+        tolerance: 0
+
+afni_volume:
+  output_path: "{work_dir}/AFNI_derivatives/{prefix}{subject}/ses-{session}/sswarp2/T1_results"
+  required_files: ["QC_anatSS.{prefix}{subject}.jpg"]
+    
+# afni_surface:
+#   output_path: "{work_dir}/AFNI_derivatives/sub-{subject}/ses-01/suma"
+#   required_files: ["*.nii.gz"]
+    
+rest_fmriprep_preprocess:
+  output_path: "{work_dir}/BIDS_derivatives/fmriprep/"
+  required_files: ["sub-{subject}*.html"]
+
+rest_fmriprep_post_fc:
+  output_path: "{work_dir}/BIDS_derivatives/xcpd/sub-{subject}/ses-{session}"
+  required_files: ["sub-{subject}*.html"]
+
+mriqc_individual:
+  output_path: "{work_dir}/quality_control/mriqc"
+  required_files: ["sub-{subject}*.html"]
+
+mriqc_group:
+  output_path: "{work_dir}/quality_control/mriqc"
+  required_files: ["group_*.html"]
+
+cards_preprocess:
+  output_path: "{work_dir}/AFNI_derivatives/{prefix}{subject}/ses-{session}/cards_output/{prefix}{subject}.results/QC_{prefix}{subject}"
+  required_files: ["index.html"]
+  
+kidvid_preprocess:
+  output_path: "{work_dir}/AFNI_derivatives/{prefix}{subject}/ses-{session}/kidvid_output/{prefix}{subject}.results/QC_{prefix}{subject}"
+  required_files: ["index.html"]

@@ -1,0 +1,31 @@
+[project]
+name = "fMRI_data_managgment_and_Tracking"
+version = "0.1.0"
+description = "Data Management and Progress Tracking for fMRI Data"
+authors = [
+    { name = "Qiuyu Yu", email = "qiuyuyu.psych@gmail.com" }
+]
+maintainers = [
+    { name = "Qiuyu Yu", email = "qiuyuyu.psych@gmail.com" }
+]
+readme = "README.md"
+requires-python = ">=3.11"
+
+dependencies = [
+  "dash,
+  "dash-bootstrap-components,
+  "pandas,
+  "plotly,
+  "numpy,
+  "openpyxl,
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest,
+  "pytest-cov,
+  "black,
+  "flake8,
+  "isort,
+  "ruff,
+]
